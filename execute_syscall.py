@@ -199,11 +199,10 @@ def main():
     # do not execute pause because it pauses the program's execution.
     skip_syscalls = ["exit", "pause"]
 
-    # sys.exit()
-
     for sd in syscall_definitions:
-        if(sd.name == "open"):
 
+        # TODO: NOTE: NOT ALL syscalls SUPPORTED. SOME WILL CAUSE SEGFAULT
+        if(sd.name == "open"):
             # check if we have a definition for this syscall first.
             if(sd.type == SyscallManual.FOUND):
                 if sd.name not in skip_syscalls:
