@@ -35,4 +35,4 @@ To run and interpose system calls (Ubuntu):
 strace -o TRACE python execute_syscall.py syscall_definitions.pickle
 ```
 
-Consider changing the values of variable s*DEBUG* and *TRACE_PRINT* to see additional output.
+Consider changing the values of variables *DEBUG* and *TRACE_PRINT* to see additional output.
