@@ -42,7 +42,7 @@ import re
 import signal
 import subprocess
 
-from Definition import Definition
+from .Definition import Definition
 
 
 # controls printing
@@ -52,43 +52,43 @@ DEBUG = False
 class SyscallManual:
     """
     <Purpose>
-      A SyscallManual is made up of the system call name and its definition 
+      A SyscallManual is made up of the system call name and its definition
       parsed from its man page.
-    
+
       The reason of having this object in addition to the Definition object is
       because the name of the system call and the definition name are not
       necessarily the same, but most of the times are. For example the name of the
       system call can be 'chown32' and the name of its definition 'chown'.
-    
+
       Some intuition regarding the above taken from chown man page:
-      The original Linux chown(), fchown(), and lchown()  system  calls  supported only 16-bit user 
+      The original Linux chown(), fchown(), and lchown()  system  calls  supported only 16-bit user
       and group IDs. Subsequently, Linux 2.4 added chown32(), fchown32(), and lchown32(), supporting
       32-bit IDs. The glibc  chown(),  fchown(), and lchown() wrapper functions transparently
       deal with the variations across kernel versions.
-    
+
     <Attributes>
       name:
         The name of the system call
-      
+
       type:
         The type of the definition. Can be one of:
          - NO_MAN_ENTRY:
             no man entry was found for this syscall name
-    
+
          - NOT_FOUND:
             man entry found but no definition found inside
-    
+
          - UNIMPLEMENTED:
             syscall identified as unimplemented
-    
+
          - FOUND:
             definition for this system call was found
-    
-      
+
+
       definition:
-        Holds the definition object if the type is FOUND. Otherwise definition is 
+        Holds the definition object if the type is FOUND. Otherwise definition is
         set to None.
-    
+
     """
 
     # types of SyscallManual.
@@ -102,22 +102,22 @@ class SyscallManual:
         """
         <Purpose>
           Creates a SyscallManual object.
-        
+
           A SyscallManual object has a name, which is the name of the system
           call, a type, which is defined in terms of the four types given above and
           finally, a definition object.
-        
+
         <Arguments>
           syscall_name:
-            The name of the system call for which to create a SyscallManual 
+            The name of the system call for which to create a SyscallManual
             object.
-        
+
         <Exceptions>
           None
-        
+
         <Side Effects>
           None
-        
+
         <Returns>
           None
         """
@@ -131,17 +131,17 @@ class SyscallManual:
           Reads the man entry of the system call whose name is given as a parameter
           and returns its definition as a Description object along with what kind of
           definition it is.
-        
+
         <Arguments>
           syscall_name:
             The name of the system call for which to get the definition.
-        
+
         <Exceptions>
           None
-        
+
         <Side Effects>
           None
-        
+
         <Returns>
           (self.NO_MAN_ENTRY, None):   if no manual entry was found.
           (self.NOT_FOUND, None):      if man entry found but definition not found.
@@ -168,31 +168,31 @@ class SyscallManual:
 
         """
         Example of the open man page, upto the definitions part:
-        
+
         <--start example-->
               OPEN(2)                  Linux Programmer's Manual           OPEN(2)
-        
+
               NAME
                      open, creat - open and possibly create a file or device
-        
+
               SYNOPSIS
                      #include <sys/types.h>
                      #include <sys/stat.h>
                      #include <fcntl.h>
-        
+
                      int open(const char *pathname, int flags);
                      int open(const char *pathname, int flags, mode_t mode);
-        
+
                      int creat(const char *pathname, mode_t mode);
-        
+
               DESCRIPTION
         <--end example-->
-        
-        
+
+
         Note that, as shown in the example above, a man page can have multiple
         definitions for the same system call (2 definitions given for open) and it
         can also include definitions of similar but different system calls (creat).
-        
+
         """
 
         # in some platforms attempts to access the man page of system calls ending

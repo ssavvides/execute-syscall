@@ -1,47 +1,47 @@
-from SyscallParameter import SyscallParameter
+from .SyscallParameter import SyscallParameter
 
 class Definition:
     """
     <Purpose>
-      A Definition object is made up of three parts: 
+      A Definition object is made up of three parts:
         - definition return type
-        - definition name 
+        - definition name
         - definition parameters
-    
+
     <Attributes>
       self.ret_type:
         The return type of the syscall definition.
-    
+
       self.name:
-        The name of the definition. This is not always the same as the syscall 
+        The name of the definition. This is not always the same as the syscall
         name.
-    
+
       self.parameters:
         A list of SyscallParameter objects each describing a parameter of the definition.
-    
+
     """
 
     def __init__(self, definition_line):
         """
         <Purpose>
           Creates a Definition object.
-        
+
           A Definition object has a return type variable, which is a string
           describing the return type of the definition, a name variable, which is
           the name of the definition and a list of SyscallParameter objects describing all
           parameters of the definition.
-        
+
         <Arguments>
           definition_line:
-            A string with the definition in a single line as it appears in the 
+            A string with the definition in a single line as it appears in the
             manual page of the corresponding system call, with any comments removed.
-        
+
         <Exceptions>
           None
-        
+
         <Side Effects>
           None
-        
+
         <Returns>
           None
         """

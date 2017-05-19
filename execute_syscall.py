@@ -2,13 +2,18 @@ import ctypes.util
 import os
 import pickle
 import sys
+import signal
 
 from sysDef.SyscallManual import SyscallManual
 
-
+# controls printing
 DEGUG = False
 
-FILEPATH = "file.txt"
+# prints a message before executing a syscall. This will appear as a write
+# syscall in a trace and can be used to track executed syscalls in large traces
+TRACE_PRINT = False
+
+FILEPATH = "TEST_FILE.txt"
 
 LIBC_NAME = ctypes.util.find_library('c')
 LIBC = ctypes.CDLL(LIBC_NAME)
@@ -31,34 +36,34 @@ def get_parameter_arginfo(parameter):
       ctypes type     C type                                  Python type
       -------------------------------------------------------------------
       c_bool          _Bool                                   bool (1)
-      
+
       c_char          char                                    1-character bytes object
       c_char_p        char * (NUL terminated)                 bytes object or None
       c_byte          char                                    int
       c_ubyte         unsigned char                           int
-      
+
       c_wchar_p       wchar_t * (NUL terminated)              string or None
       c_wchar         wchar_t                                 1-character string
-    
+
       c_short         short                                   int
       c_ushort        unsigned short                          int
-    
+
       c_int           int                                     int
       c_uint          unsigned int                            int
-    
+
       c_long          long                                    int
       c_ulong         unsigned long                           int
       c_longlong      __int64 or long long                    int
       c_ulonglong     unsigned __int64 or unsigned long long  int
-      
+
       c_size_t        size_t                                  int
       c_ssize_t       ssize_t or Py_ssize_t                   int
-      
+
       c_float         float                                   float
-      
+
       c_double        double                                  float
       c_longdouble    long double                             float
-    
+
       c_void_p        void *                                  int or None
     """
 
@@ -139,15 +144,15 @@ def execute_syscall(syscall_definition):
     """
 
     if DEGUG:
-        print("Trying:", syscall_definition)
+        print "Trying:" + str(syscall_definition)
 
     # get the syscall function to execute.
     syscall_func = getattr(LIBC, syscall_definition.name, None)
 
     if(syscall_func == None):
         if DEGUG:
-            print("Syscall not found in LIBC:", syscall_definition.name)
-            print()
+            print "Syscall not found in LIBC:" + str(syscall_definition.name)
+            print
         return
 
     # get the required argument types and argument values for this syscall
@@ -156,19 +161,23 @@ def execute_syscall(syscall_definition):
 
     if syscall_argtypes == None:
         if DEGUG:
-            print("Not Supported:", syscall_definition.name)
-            print()
+            print "Not Supported:" + str(syscall_definition.name)
+            print
         return
 
     if DEGUG:
-        print("Executing syscall funtion:", syscall_definition.name)
-        print()
+        print "Executing syscall funtion:" + str(syscall_definition.name)
+        print
+
+
+    if TRACE_PRINT:
+        print "Executing:" + str(syscall_definition.name)
 
     # set the required argument types for the syscall function.
     syscall_func.argtypes = syscall_argtypes
 
     # call the syscall function with the derived arguments values unpacked
-    syscall_func(*syscall_argvalues)
+    exec("syscall_func(*syscall_argvalues)")
 
 
 
@@ -197,17 +206,14 @@ def main():
 
     # do not execute exit because it will cause the program to terminate.
     # do not execute pause because it pauses the program's execution.
-    skip_syscalls = ["exit", "pause"]
+    # do not execute vfork because the parent blocks, ultimately causing segfault
+    skip_syscalls = ["exit", "pause", "vfork"]
 
     for sd in syscall_definitions:
-
-        # TODO: NOTE: NOT ALL syscalls SUPPORTED. SOME WILL CAUSE SEGFAULT
-        if(sd.name == "open"):
-            # check if we have a definition for this syscall first.
-            if(sd.type == SyscallManual.FOUND):
-                if sd.name not in skip_syscalls:
-                    execute_syscall(sd)
-
+        # check if we have a definition for this syscall first.
+        if(sd.type == SyscallManual.FOUND):
+            if sd.name not in skip_syscalls:
+                execute_syscall(sd)
 
 
 
